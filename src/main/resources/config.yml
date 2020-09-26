@@ -1,0 +1,6 @@
+qq_number: 12345
+qq_password: 12345
+noGuiSupport: false
+pterodactyl:
+  enabled: false
+  applicationurl: http://127.0.0.1
