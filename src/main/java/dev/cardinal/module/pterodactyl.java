@@ -14,6 +14,8 @@ import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.MessageEvent;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class pterodactyl {
     public void onMessage(MessageEvent event) {
@@ -246,6 +248,30 @@ public class pterodactyl {
                 return;
             } else {
                 tempHashMap = UserData.userData.get(sender.getId());
+                //Not finished yet
+            }
+        }
+
+        if (command.equals("翼龙列表")) {
+            HashMap tempHashMap = new HashMap();
+            String tempMessageCache = "服务器列表: \n标识符  服务器名\n";
+            if (UserData.userData.get(sender.getId()) == null) {
+                contact.sendMessage("请先绑定");
+                return;
+            } else {
+                tempHashMap = UserData.userData.get(sender.getId());
+                Iterator<Map.Entry<String,String>> iterator = tempHashMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String,String> entry = iterator.next();
+                    if (!entry.getKey().equals("default")) {
+                        String serverId = entry.getKey();
+                        String token = entry.getValue();
+                        ClientServer clientServer = pteroBuilder.setToken(token).build().asClient().retrieveServerByIdentifier(serverId).execute();
+                        String serverName = clientServer.getName();
+                        tempMessageCache += serverId + " : " + serverName + "\n";
+                    }
+                }
+                contact.sendMessage(tempMessageCache);
             }
         }
     }
