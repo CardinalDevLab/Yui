@@ -69,6 +69,7 @@ public class Yui {
             bot = BotFactoryJvm.newBot(ConfigData.qqNumber, ConfigData.qqPassword, new BotConfiguration() {
                 {
                     fileBasedDeviceInfo(fileUtils.getBaseFolder()+"/deviceInfo.json");
+                    setProtocol(MiraiProtocol.ANDROID_PHONE);
                     setLoginSolver(ConfigData.customLoginSolver);
                 }
             });
@@ -76,6 +77,7 @@ public class Yui {
             bot = BotFactoryJvm.newBot(ConfigData.qqNumber, ConfigData.qqPassword, new BotConfiguration() {
                 {
                     fileBasedDeviceInfo(fileUtils.getBaseFolder() + "/deviceInfo.json");
+                    setProtocol(MiraiProtocol.ANDROID_PHONE);
                 }
             });
         }
@@ -83,5 +85,6 @@ public class Yui {
 
         Events.registerEvents(bot,new MessageListener());
 
+        bot.join();
     }
 }
