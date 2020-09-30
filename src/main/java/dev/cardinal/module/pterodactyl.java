@@ -9,8 +9,8 @@ import dev.cardinal.data.ConfigData;
 import dev.cardinal.data.UserData;
 import dev.cardinal.utils.MessageUtils;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.User;
+import net.mamoe.mirai.message.GroupMessageEvent;
 import net.mamoe.mirai.message.MessageEvent;
 
 import java.util.HashMap;
@@ -33,7 +33,16 @@ public class pterodactyl {
         PteroBuilder pteroBuilder = new PteroBuilder().setApplicationUrl(ConfigData.pterodactylApplicationurl);
 
         if (command.equals("翼龙绑定")) {
-            if (args.length() != 8) {
+            if (event instanceof GroupMessageEvent) {
+                if (event.getBot().getGroup(event.getSubject().getId()).get(event.getBot().getId()).getPermission().getLevel() < 1 || event.getBot().getGroup(event.getSubject().getId()).get(event.getSender().getId()).getPermission().getLevel() > 1) {
+                    event.getSubject().sendMessage("敏感操作, 请私信进行! 机器人无权限, 无法撤回!");
+                    return;
+                }
+                event.getBot().recallIn(event.getMessage(), 500);
+                event.getSubject().sendMessage("敏感操作, 请私信进行!");
+                return;
+            }
+            if (args.length() <= 8) {
                 contact.sendMessage("命令格式不正确");
                 return;
             }
@@ -42,24 +51,24 @@ public class pterodactyl {
             PteroClient api = pteroBuilder.setToken(token).build().asClient();
             if (api.retrieveServerByIdentifier(serverId).execute().isServerOwner()) {
                 HashMap tempHashMap = null;
-                if (UserData.userData.get(sender.getId()) != null) {
-                    tempHashMap = UserData.userData.get(sender.getId());
+                if (UserData.pterodactylUserData.get(sender.getId()) != null) {
+                    tempHashMap = UserData.pterodactylUserData.get(sender.getId());
                 } else {
                     tempHashMap = new HashMap();
                 }
                 tempHashMap.put(serverId,token);
-                UserData.userData.put(sender.getId(),tempHashMap);
+                UserData.pterodactylUserData.put(sender.getId(),tempHashMap);
                 contact.sendMessage("绑定成功");
             }
         }
 
         if (command.equals("翼龙状态")) {
             HashMap tempHashMap = new HashMap();
-            if (UserData.userData.get(sender.getId()) == null) {
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
                 contact.sendMessage("请先绑定");
                 return;
             } else {
-                tempHashMap = UserData.userData.get(sender.getId());
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
             }
             if (args.length() == 0) {
                 if (tempHashMap.get("default") == null) {
@@ -93,16 +102,16 @@ public class pterodactyl {
 
         if (command.equals("翼龙默认")) {
             HashMap tempHashMap = new HashMap();
-            if (UserData.userData.get(sender.getId()) == null) {
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
                 contact.sendMessage("请先绑定");
                 return;
             } else {
-                tempHashMap = UserData.userData.get(sender.getId());
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
             }
             if (args.length() == 8) {
                 String serverId = args.substring(0, 8);
                 tempHashMap.put("default", serverId);
-                UserData.userData.put(sender.getId(), tempHashMap);
+                UserData.pterodactylUserData.put(sender.getId(), tempHashMap);
                 contact.sendMessage("设置成功");
             } else {
                 contact.sendMessage("命令格式不正确");
@@ -111,11 +120,11 @@ public class pterodactyl {
 
         if (command.equals("翼龙启动")) {
             HashMap tempHashMap = new HashMap();
-            if (UserData.userData.get(sender.getId()) == null) {
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
                 contact.sendMessage("请先绑定");
                 return;
             } else {
-                tempHashMap = UserData.userData.get(sender.getId());
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
             }
             if (args.length() == 0) {
                 if (tempHashMap.get("default") == null) {
@@ -144,11 +153,11 @@ public class pterodactyl {
 
         if (command.equals("翼龙关机")) {
             HashMap tempHashMap = new HashMap();
-            if (UserData.userData.get(sender.getId()) == null) {
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
                 contact.sendMessage("请先绑定");
                 return;
             } else {
-                tempHashMap = UserData.userData.get(sender.getId());
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
             }
             if (args.length() == 0) {
                 if (tempHashMap.get("default") == null) {
@@ -177,11 +186,11 @@ public class pterodactyl {
 
         if (command.equals("翼龙强停")) {
             HashMap tempHashMap = new HashMap();
-            if (UserData.userData.get(sender.getId()) == null) {
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
                 contact.sendMessage("请先绑定");
                 return;
             } else {
-                tempHashMap = UserData.userData.get(sender.getId());
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
             }
             if (args.length() == 0) {
                 if (tempHashMap.get("default") == null) {
@@ -210,11 +219,11 @@ public class pterodactyl {
 
         if (command.equals("翼龙重启")) {
             HashMap tempHashMap = new HashMap();
-            if (UserData.userData.get(sender.getId()) == null) {
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
                 contact.sendMessage("请先绑定");
                 return;
             } else {
-                tempHashMap = UserData.userData.get(sender.getId());
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
             }
             if (args.length() == 0) {
                 if (tempHashMap.get("default") == null) {
@@ -241,25 +250,14 @@ public class pterodactyl {
             }
         }
 
-        if (command.equals("翼龙执行")) {
-            HashMap tempHashMap = new HashMap();
-            if (UserData.userData.get(sender.getId()) == null) {
-                contact.sendMessage("请先绑定");
-                return;
-            } else {
-                tempHashMap = UserData.userData.get(sender.getId());
-                //Not finished yet
-            }
-        }
-
         if (command.equals("翼龙列表")) {
             HashMap tempHashMap = new HashMap();
             String tempMessageCache = "服务器列表: \n标识符  服务器名\n";
-            if (UserData.userData.get(sender.getId()) == null) {
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
                 contact.sendMessage("请先绑定");
                 return;
             } else {
-                tempHashMap = UserData.userData.get(sender.getId());
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
                 Iterator<Map.Entry<String,String>> iterator = tempHashMap.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<String,String> entry = iterator.next();
@@ -274,6 +272,37 @@ public class pterodactyl {
                 contact.sendMessage(tempMessageCache);
             }
         }
+
+        if (command.equals("翼龙执行")) {
+            HashMap tempHashMap = new HashMap();
+            if (UserData.pterodactylUserData.get(sender.getId()) == null) {
+                contact.sendMessage("请先绑定");
+                return;
+            } else {
+                tempHashMap = UserData.pterodactylUserData.get(sender.getId());
+            }
+            String serverId;
+            String token;
+            String tempCommand;
+            if (args.length() > 8) {
+                serverId = args.substring(0,8);
+                if (tempHashMap.get(serverId) != null) {
+                    token = String.valueOf(tempHashMap.get(serverId));
+                    tempCommand = args.substring(9);
+                    ClientServer clientServer = pteroBuilder.setToken(token).build().asClient().retrieveServerByIdentifier(serverId).execute();
+                    PteroClient api = pteroBuilder.setToken(token).build().asClient();
+                    api.sendCommand(clientServer, tempCommand).execute();
+                    contact.sendMessage("正在执行" + tempCommand);
+                } else {
+                    if (tempHashMap.get("default") != null) {
+                        contact.sendMessage("此服务器未绑定");
+                    }
+                }
+            } else {
+                contact.sendMessage("请指定服务器");
+            }
+        }
+
     }
 
 }

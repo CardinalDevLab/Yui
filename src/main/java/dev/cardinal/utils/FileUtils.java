@@ -53,7 +53,8 @@ public class FileUtils {
                 options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
                 Yaml yaml = new Yaml(options);
                 try {
-                    yaml.dump(UserData.userData, new FileWriter(userdatapath));
+                    yaml.dump(UserData.pterodactylUserData, new FileWriter(userdatapath + "pterodactyl.yml"));
+
                     yaml.dump(ConfigData.configMap, new FileWriter(configpath));
                 } catch (IOException e) {
                     e.printStackTrace();

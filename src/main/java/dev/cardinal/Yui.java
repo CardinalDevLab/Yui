@@ -1,28 +1,18 @@
 package dev.cardinal;
 
-import com.mattmalec.pterodactyl4j.PowerAction;
-import com.mattmalec.pterodactyl4j.PteroAction;
-import com.mattmalec.pterodactyl4j.PteroBuilder;
-import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
-import com.mattmalec.pterodactyl4j.entities.PteroAPI;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import dev.cardinal.data.ConfigData;
 import dev.cardinal.data.UserData;
 import dev.cardinal.listener.MessageListener;
 import dev.cardinal.utils.FileUtils;
 import net.mamoe.mirai.Bot;
-import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.BotFactoryJvm;
 import net.mamoe.mirai.event.Events;
 import net.mamoe.mirai.utils.BotConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Yui {
     public static Yaml yaml = new Yaml();
@@ -33,12 +23,12 @@ public class Yui {
         String userDataPath;
 
         //File actions
-        if (!new File(fileUtils.getBaseFolder()+"/config.yml").exists() || !new File(fileUtils.getBaseFolder()+ "/userdata.yml").exists()) {
+        if (!new File(fileUtils.getBaseFolder()+"/config.yml").exists()) {
             configPath = fileUtils.ExportResource("/config.yml");
-            userDataPath = fileUtils.ExportResource("/userdata.yml");
+            userDataPath = fileUtils.ExportResource("/data/");
         } else {
             configPath = fileUtils.getBaseFolder() + "/config.yml";
-            userDataPath = fileUtils.getBaseFolder() + "/userdata.yml";
+            userDataPath = fileUtils.getBaseFolder() + "/data/";
         }
 
         //Config Actions
@@ -53,7 +43,7 @@ public class Yui {
         ConfigData.pterodactylApplicationurl = String.valueOf(ConfigData.pterodactylConfig.get("applicationurl"));
 
         //UserData Actions
-        UserData.userData = yaml.load(new FileInputStream(new File(userDataPath)));
+        UserData.pterodactylUserData = yaml.load(new FileInputStream(new File(userDataPath + "pterodactyluserdata.yml")));
 
 
 //        Iterator<Map.Entry<Long, HashMap<String, String>>> entries = UserData.userData.entrySet().iterator();
